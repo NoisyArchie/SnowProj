@@ -63,6 +63,18 @@
             from { transform: translateY(50px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
+
+        /* Modal specific styles */
+        .modal-overlay {
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+        .modal-content {
+            animation: zoomIn 0.3s ease-out;
+        }
+        @keyframes zoomIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
     </style>
 </head>
 <body class="gradient-bg min-h-screen flex items-center justify-center p-4">
@@ -75,101 +87,59 @@
                 </svg>
             </div>
             <h1 class="text-3xl font-bold text-white-pure mb-2">Bienvenido</h1>
-            <p class="text-gray-light">Accede a tu cuenta o regístrate</p>
+            <p class="text-gray-light">Accede a tu cuenta</p>
         </div>
-        <!-- Navegación de Pestañas -->
+        <!-- Card de Iniciar Sesión -->
         <div class="card-gradient rounded-2xl shadow-2xl p-6 slide-up">
-            <div class="flex mb-6 bg-dark-bg rounded-xl p-1">
-                <button id="loginTab" class="flex-1 py-3 px-4 text-sm font-medium rounded-lg text-white-pure btn-gradient transition-all duration-300">
+            <h2 class="text-xl font-semibold text-white-pure mb-4 text-center">Iniciar Sesión</h2>
+            
+            <form id="loginForm" method="post" action="">
+                <div class="space-y-4">
+                    <div>
+                        <label for="log_username" class="block text-sm font-medium text-gray-light mb-2">Usuario</label>
+                        <input type="text" 
+                               id="log_username" 
+                               name="log_username" 
+                               placeholder="Introduce tu usuario"
+                               class="w-full px-4 py-3 bg-dark-bg border border-gray-medium rounded-lg text-white-pure placeholder-gray-medium focus:outline-none focus:border-red-accent input-focus transition-all duration-300"
+                               required>
+                    </div>
+                    
+                    <div>
+                        <label for="log_password" class="block text-sm font-medium text-gray-light mb-2">Contraseña</label>
+                        <div class="relative">
+                            <input type="password" 
+                                   id="log_password" 
+                                   name="log_password" 
+                                   placeholder="Introduce tu contraseña"
+                                   class="w-full px-4 py-3 bg-dark-bg border border-gray-medium rounded-lg text-white-pure placeholder-gray-medium focus:outline-none focus:border-red-accent input-focus transition-all duration-300 pr-12"
+                                   required>
+                            <button type="button" 
+                                    onclick="togglePassword('log_password')"
+                                    class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-medium hover:text-red-accent transition-colors duration-200">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="submit" 
+                        name="login"
+                        id="loginButton"
+                        class="w-full mt-6 py-3 px-4 btn-gradient text-white-pure font-semibold rounded-lg hover:shadow-lg transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-red-accent focus:ring-opacity-50">
                     Iniciar Sesión
                 </button>
-                <button id="registerTab" class="flex-1 py-3 px-4 text-sm font-medium rounded-lg text-gray-medium hover:text-white-pure transition-all duration-300">
-                    Registrarse
-                </button>
-            </div>
-            <form method="post" action="">
-                <!-- Formulario de Inicio de Sesión -->
-                <div id="loginForm" class="space-y-6">
-                    <h2 class="text-xl font-semibold text-white-pure mb-4">Iniciar Sesión</h2>
-                    
-                    <div class="space-y-4">
-                        <div>
-                            <label for="log_username" class="block text-sm font-medium text-gray-light mb-2">Usuario</label>
-                            <input type="text" 
-                                   id="log_username" 
-                                   name="log_username" 
-                                   placeholder="Introduce tu usuario"
-                                   class="w-full px-4 py-3 bg-dark-bg border border-gray-medium rounded-lg text-white-pure placeholder-gray-medium focus:outline-none focus:border-red-accent input-focus transition-all duration-300"
-                                   required>
-                        </div>
-                        
-                        <div>
-                            <label for="log_password" class="block text-sm font-medium text-gray-light mb-2">Contraseña</label>
-                            <div class="relative">
-                                <input type="password" 
-                                       id="log_password" 
-                                       name="log_password" 
-                                       placeholder="Introduce tu contraseña"
-                                       class="w-full px-4 py-3 bg-dark-bg border border-gray-medium rounded-lg text-white-pure placeholder-gray-medium focus:outline-none focus:border-red-accent input-focus transition-all duration-300 pr-12"
-                                       required>
-                                <button type="button" 
-                                        onclick="togglePassword('log_password')"
-                                        class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-medium hover:text-red-accent transition-colors duration-200">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <button type="submit" 
-                            name="login"
-                            class="w-full py-3 px-4 btn-gradient text-white-pure font-semibold rounded-lg hover:shadow-lg transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-red-accent focus:ring-opacity-50">
-                        Iniciar Sesión
-                    </button>
-                </div>
-                <!-- Formulario de Registro -->
-                <div id="registerForm" class="space-y-6 hidden">
-                    <h2 class="text-xl font-semibold text-white-pure mb-4">Crear Cuenta</h2>
-                    
-                    <div class="space-y-4">
-                        <div>
-                            <label for="reg_username" class="block text-sm font-medium text-gray-light mb-2">Usuario</label>
-                            <input type="text" 
-                                   id="reg_username" 
-                                   name="reg_username" 
-                                   placeholder="Introduce tu usuario"
-                                   class="w-full px-4 py-3 bg-dark-bg border border-gray-medium rounded-lg text-white-pure placeholder-gray-medium focus:outline-none focus:border-red-accent input-focus transition-all duration-300">
-                        </div>
-                        
-                        <div>
-                            <label for="reg_password" class="block text-sm font-medium text-gray-light mb-2">Contraseña</label>
-                            <div class="relative">
-                                <input type="password" 
-                                       id="reg_password" 
-                                       name="reg_password" 
-                                       placeholder="Introduce tu contraseña"
-                                       class="w-full px-4 py-3 bg-dark-bg border border-gray-medium rounded-lg text-white-pure placeholder-gray-medium focus:outline-none focus:border-red-accent input-focus transition-all duration-300 pr-12">
-                                <button type="button" 
-                                        onclick="togglePassword('reg_password')"
-                                        class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-medium hover:text-red-accent transition-colors duration-200">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 616 0z"></path>
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <button type="submit" 
-                            name="register"
-                            class="w-full py-3 px-4 btn-gradient text-white-pure font-semibold rounded-lg hover:shadow-lg transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-red-accent focus:ring-opacity-50">
-                        Registrarse
-                    </button>
-                </div>
+            </form>
+
+            <!-- Formulario oculto para enviar datos al PHP -->
+            <form id="hiddenForm" method="post" action="" class="hidden">
+                <input type="hidden" name="action" id="hidden_action">
+                <input type="hidden" name="username" id="hidden_username">
+                <input type="hidden" name="password" id="hidden_password">
+                <input type="hidden" name="token" id="hidden_token">
             </form>
         </div>
         <!-- Pie de página -->
@@ -180,120 +150,242 @@
             </p>
         </div>
     </div>
-    <!-- Procesamiento PHP (mantiene tu lógica original) -->
+
+    <!-- Modal para el Token -->
+    <div id="tokenModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden modal-overlay">
+        <div class="card-gradient rounded-2xl shadow-2xl p-8 max-w-sm w-full modal-content">
+            <h3 class="text-2xl font-bold text-white-pure mb-4 text-center">Verificación de Token</h3>
+            <p class="text-gray-light text-center mb-6">Se ha enviado un token de acceso a tu correo electrónico.</p>
+            <div class="space-y-4">
+                <div>
+                    <label for="tokenInput" class="block text-sm font-medium text-gray-light mb-2">Introduce el Token</label>
+                    <input type="text" 
+                           id="tokenInput" 
+                           placeholder="Tu token de 6 dígitos"
+                           class="w-full px-4 py-3 bg-dark-bg border border-gray-medium rounded-lg text-white-pure placeholder-gray-medium text-center tracking-widest text-lg focus:outline-none focus:border-red-accent input-focus transition-all duration-300"
+                           maxlength="6"
+                           required>
+                </div>
+                <button type="button" 
+                        onclick="verifyToken()"
+                        class="w-full py-3 px-4 btn-gradient text-white-pure font-semibold rounded-lg hover:shadow-lg transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-red-accent focus:ring-opacity-50">
+                    Verificar Token
+                </button>
+                <button type="button" 
+                        onclick="resendToken()"
+                        class="w-full py-3 px-4 bg-transparent border border-gray-medium text-gray-light font-semibold rounded-lg hover:bg-gray-medium hover:text-dark-bg transform hover:scale-105 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-gray-medium focus:ring-opacity-50">
+                    Reenviar Token
+                </button>
+            </div>
+            <button type="button" 
+                    onclick="closeTokenModal()"
+                    class="absolute top-4 right-4 text-gray-medium hover:text-white-pure transition-colors duration-200">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Procesamiento PHP (mantiene tu lógica original, ajustada para el flujo de token) -->
     <?php
     include '../php/conn.php';
-    include '../correotoken.php';
-    
-    if (isset($_POST['login'])){
-        $usuario = $_POST['log_username'];
-        $contrasena = $_POST['log_password'];
-        $sql = "SELECT id, contrasena FROM usuarios WHERE usuario = ?";
-        $stmt = $conexion->prepare($sql);
-        mysqli_stmt_bind_param($stmt,"s",$usuario);
-        mysqli_stmt_execute($stmt);
-        $resultado = mysqli_stmt_get_result($stmt);
-        
-        if ($row = mysqli_fetch_assoc($resultado)){
-            $hashGuardado = $row['contrasena'];
-            if (password_verify($contrasena,$hashGuardado)){
-                echo '<script>
-                    document.addEventListener("DOMContentLoaded", function() {
-                        showNotification("Iniciaste sesión correctamente", "success");
-                    });
-                </script>';
-                
-                $token = bin2hex(random_bytes(16));
-                $token_hash = password_hash($token, PASSWORD_ARGON2ID);
-                $sql = "INSERT INTO tokens (usuario_id, token, creado_en, expiracion) VALUES (?, ?, NOW(), DATE_ADD(NOW(), INTERVAL 1 HOUR))";
-                $stmt = $conexion->prepare($sql);
-                mysqli_stmt_bind_param($stmt,"is",$row['id'], $token_hash);
-                mysqli_stmt_execute($stmt);
-                
-                if ($stmt->affected_rows > 0) {
-                    setcookie("auth_token", $token, time() + 3600, "/", "", false, true);
-                    mandarCorreo($usuario, $token);
-                    echo '<script>
-                        setTimeout(function() {
-                            showNotification("Token generado y correo enviado", "success");
-                        }, 1000);
-                    </script>';
+    include '../correotoken.php'; // Asegúrate de que esta ruta sea correcta
+
+    if (isset($_POST['action'])) {
+        $action = $_POST['action'];
+        $usuario = $_POST['username'];
+        $contrasena = $_POST['password']; // Se usa para verificar la primera vez
+        $token_input = isset($_POST['token']) ? $_POST['token'] : '';
+
+        // Lógica para el primer paso: verificar credenciales y enviar token
+        if ($action === 'login_request') {
+            $sql = "SELECT id, contrasena, email FROM usuarios WHERE usuario = ?";
+            $stmt = $conexion->prepare($sql);
+            mysqli_stmt_bind_param($stmt, "s", $usuario);
+            mysqli_stmt_execute($stmt);
+            $resultado = mysqli_stmt_get_result($stmt);
+
+            if ($row = mysqli_fetch_assoc($resultado)) {
+                $hashGuardado = $row['contrasena'];
+                if (password_verify($contrasena, $hashGuardado)) {
+                    // Generar y enviar token
+                    $token = bin2hex(random_bytes(3)); // Token de 6 caracteres
+                    $token_hash = password_hash($token, PASSWORD_ARGON2ID);
+                    
+                    // Almacenar el token junto con el email para verificación
+                    $sql_insert_token = "INSERT INTO tokens (usuario_id, token, creado_en, expiracion) VALUES (?, ?, NOW(), DATE_ADD(NOW(), INTERVAL 10 MINUTE))"; // Token expira en 10 min
+                    $stmt_insert_token = $conexion->prepare($sql_insert_token);
+                    mysqli_stmt_bind_param($stmt_insert_token, "is", $row['id'], $token_hash);
+                    
+                    if ($stmt_insert_token->execute()) {
+                        mandarCorreo($row['email'], $token); // Asumiendo que mandarCorreo toma el email
+                        echo '<script>
+                            document.addEventListener("DOMContentLoaded", function() {
+                                showTokenModal("' . $usuario . '", "' . $contrasena . '");
+                                showNotification("Token enviado a tu correo electrónico", "success");
+                            });
+                        </script>';
+                    } else {
+                        echo '<script>
+                            document.addEventListener("DOMContentLoaded", function() {
+                                showNotification("Error al generar el token", "error");
+                            });
+                        </script>';
+                    }
+                    $stmt_insert_token->close();
+
                 } else {
                     echo '<script>
                         document.addEventListener("DOMContentLoaded", function() {
-                            showNotification("Error al generar el token", "error");
+                            showNotification("Contraseña incorrecta", "error");
                         });
                     </script>';
                 }
             } else {
                 echo '<script>
                     document.addEventListener("DOMContentLoaded", function() {
-                        showNotification("Contraseña incorrecta", "error");
+                        showNotification("Usuario no encontrado", "error");
                     });
                 </script>';
             }
-        } else {
-            echo '<script>
-                document.addEventListener("DOMContentLoaded", function() {
-                    showNotification("Usuario no encontrado", "error");
-                });
-            </script>';
+            $stmt->close();
+        } 
+        // Lógica para el segundo paso: verificar el token
+        else if ($action === 'verify_token' && !empty($token_input)) {
+            $sql = "SELECT t.token, t.expiracion, u.id FROM tokens t JOIN usuarios u ON t.usuario_id = u.id WHERE u.usuario = ? ORDER BY t.creado_en DESC LIMIT 1";
+            $stmt = $conexion->prepare($sql);
+            mysqli_stmt_bind_param($stmt, "s", $usuario);
+            mysqli_stmt_execute($stmt);
+            $resultado = mysqli_stmt_get_result($stmt);
+
+            if ($row = mysqli_fetch_assoc($resultado)) {
+                $token_hash_guardado = $row['token'];
+                $expiracion = strtotime($row['expiracion']);
+
+                if (password_verify($token_input, $token_hash_guardado) && time() < $expiracion) {
+                    echo '<script>
+                        document.addEventListener("DOMContentLoaded", function() {
+                            showNotification("Inicio de sesión exitoso!", "success");
+                            setTimeout(function() {
+                                window.location.href = "dashboard.php"; // Redirigir al usuario
+                            }, 1500);
+                        });
+                    </script>';
+                    // Eliminar el token usado para seguridad
+                    $sql_delete_token = "DELETE FROM tokens WHERE token = ?";
+                    $stmt_delete_token = $conexion->prepare($sql_delete_token);
+                    mysqli_stmt_bind_param($stmt_delete_token, "s", $token_hash_guardado);
+                    $stmt_delete_token->execute();
+                    $stmt_delete_token->close();
+
+                } else {
+                    echo '<script>
+                        document.addEventListener("DOMContentLoaded", function() {
+                            showNotification("Token inválido o expirado", "error");
+                            showTokenModal("' . $usuario . '", "' . $contrasena . '"); // Mantener el modal abierto o reabrirlo
+                        });
+                    </script>';
+                }
+            } else {
+                echo '<script>
+                    document.addEventListener("DOMContentLoaded", function() {
+                        showNotification("No se encontró un token para este usuario", "error");
+                    });
+                </script>';
+            }
+            $stmt->close();
         }
-    }
-    
-    if (isset($_POST['register'])) {
-        $usuario = $_POST['reg_username'];
-        $contrasena = $_POST['reg_password'];
-        $hash = password_hash($contrasena, PASSWORD_ARGON2ID);
-        $sql = "INSERT INTO usuarios (usuario, contrasena) VALUES (?, ?)";
-        $stmt = $conexion->prepare($sql);
-        $stmt->bind_param("ss", $usuario, $hash);
-        
-        if ($stmt->execute()) {
-            echo '<script>
-                document.addEventListener("DOMContentLoaded", function() {
-                    showNotification("Usuario registrado correctamente", "success");
-                });
-            </script>';
-        } else {
-            echo '<script>
-                document.addEventListener("DOMContentLoaded", function() {
-                    showNotification("Error: Usuario ya existe o datos inválidos", "error");
-                });
-            </script>';
-        }
-        $stmt->close();
     }
     ?>
     <!-- Contenedor de Notificaciones -->
     <div id="notifications" class="fixed top-4 right-4 z-50 space-y-2"></div>
     <script>
-        // Funcionalidad de cambio de pestañas
-        document.getElementById('loginTab').addEventListener('click', function() {
-            switchTab('login');
-        });
-        document.getElementById('registerTab').addEventListener('click', function() {
-            switchTab('register');
+        // Variables globales para el modal de token
+        let currentUsername = '';
+        let currentPassword = '';
+        
+        // Manejar el envío inicial del formulario de login
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault(); // Prevenir el envío normal del formulario
+
+            const username = document.getElementById('log_username').value.trim();
+            const password = document.getElementById('log_password').value.trim();
+            
+            if (!username || !password) {
+                showNotification('Por favor, completa todos los campos', 'error');
+                return;
+            }
+
+            // Almacenar las credenciales para el flujo del token
+            currentUsername = username;
+            currentPassword = password;
+            
+            // Enviar primera petición para generar y enviar token
+            document.getElementById('hidden_action').value = 'login_request';
+            document.getElementById('hidden_username').value = username;
+            document.getElementById('hidden_password').value = password;
+            document.getElementById('hidden_token').value = ''; // Asegurarse de que el token esté vacío en esta etapa
+            document.getElementById('hiddenForm').submit();
         });
         
-        function switchTab(tab) {
-            const loginTab = document.getElementById('loginTab');
-            const registerTab = document.getElementById('registerTab');
-            const loginForm = document.getElementById('loginForm');
-            const registerForm = document.getElementById('registerForm');
-            
-            if (tab === 'login') {
-                loginTab.className = "flex-1 py-3 px-4 text-sm font-medium rounded-lg text-white-pure btn-gradient transition-all duration-300";
-                registerTab.className = "flex-1 py-3 px-4 text-sm font-medium rounded-lg text-gray-medium hover:text-white-pure transition-all duration-300";
-                loginForm.classList.remove('hidden');
-                registerForm.classList.add('hidden');
-            } else {
-                registerTab.className = "flex-1 py-3 px-4 text-sm font-medium rounded-lg text-white-pure btn-gradient transition-all duration-300";
-                loginTab.className = "flex-1 py-3 px-4 text-sm font-medium rounded-lg text-gray-medium hover:text-white-pure transition-all duration-300";
-                registerForm.classList.remove('hidden');
-                loginForm.classList.add('hidden');
-            }
+        // Mostrar modal de token
+        function showTokenModal(username, password) {
+            currentUsername = username;
+            currentPassword = password;
+            document.getElementById('tokenModal').classList.remove('hidden');
+            document.getElementById('tokenInput').focus();
         }
+        
+        // Cerrar modal de token
+        function closeTokenModal() {
+            document.getElementById('tokenModal').classList.add('hidden');
+            document.getElementById('tokenInput').value = '';
+        }
+        
+        // Verificar token
+        function verifyToken() {
+            const token = document.getElementById('tokenInput').value.trim();
+            
+            if (!token) {
+                showNotification('Por favor, introduce el token', 'error');
+                return;
+            }
+            
+            // Enviar segunda petición con el token
+            document.getElementById('hidden_action').value = 'verify_token';
+            document.getElementById('hidden_username').value = currentUsername;
+            document.getElementById('hidden_password').value = currentPassword; // Necesario si el PHP lo usa para re-validar
+            document.getElementById('hidden_token').value = token;
+            document.getElementById('hiddenForm').submit();
+            
+            // closeTokenModal(); // Se cierra después de la respuesta del servidor para ver la notificación
+        }
+        
+        // Reenviar token
+        function resendToken() {
+            if (!currentUsername || !currentPassword) {
+                showNotification('Error: Datos de sesión perdidos. Por favor, inicia sesión de nuevo.', 'error');
+                closeTokenModal(); // Cerrar modal si no hay datos
+                return;
+            }
+            
+            document.getElementById('hidden_action').value = 'login_request'; // Volver a solicitar el login para generar un nuevo token
+            document.getElementById('hidden_username').value = currentUsername;
+            document.getElementById('hidden_password').value = currentPassword;
+            document.getElementById('hidden_token').value = '';
+            document.getElementById('hiddenForm').submit();
+            
+            showNotification('Reenviando token...', 'success');
+            document.getElementById('tokenInput').value = ''; // Limpiar campo del token
+        }
+        
+        // Permitir envío con Enter en el campo de token
+        document.getElementById('tokenInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                verifyToken();
+            }
+        });
         
         // Funcionalidad para mostrar/ocultar contraseña
         function togglePassword(fieldId) {
@@ -302,7 +394,7 @@
             field.setAttribute('type', type);
         }
         
-        // Sistema de notificaciones
+        // Sistema de notificaciones mejorado
         function showNotification(message, type) {
             const notification = document.createElement('div');
             const bgColor = type === 'success' ? 'bg-green-600' : 'bg-red-600';
@@ -337,36 +429,36 @@
             }, 5000);
         }
         
-        // Validación de formularios
-        document.querySelectorAll('form').forEach(form => {
-            form.addEventListener('submit', function(e) {
-                const inputs = this.querySelectorAll('input[required]');
-                let valid = true;
-                
-                inputs.forEach(input => {
-                    if (!input.value.trim()) {
-                        input.classList.add('border-red-accent');
-                        valid = false;
-                    } else {
-                        input.classList.remove('border-red-accent');
-                    }
-                });
-                
-                if (!valid) {
-                    e.preventDefault();
-                    showNotification('Por favor, completa todos los campos requeridos', 'error');
+        // Validación de formularios (solo el de login ahora)
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            const inputs = this.querySelectorAll('input[required]');
+            let valid = true;
+            
+            inputs.forEach(input => {
+                if (!input.value.trim()) {
+                    input.classList.add('border-red-accent');
+                    valid = false;
+                } else {
+                    input.classList.remove('border-red-accent');
                 }
             });
+            
+            if (!valid) {
+                e.preventDefault(); // Esto ya lo hace el listener principal, pero es bueno tenerlo aquí también
+                showNotification('Por favor, completa todos los campos requeridos', 'error');
+            }
         });
         
         // Efectos de enfoque en los campos de entrada
         document.querySelectorAll('input').forEach(input => {
             input.addEventListener('focus', function() {
-                this.parentElement.classList.add('scale-105');
+                // this.parentElement.classList.add('scale-105'); // Deshabilitado para evitar escalado del padre
+                this.classList.add('ring-2', 'ring-red-accent', 'ring-opacity-50');
             });
             
             input.addEventListener('blur', function() {
-                this.parentElement.classList.remove('scale-105');
+                // this.parentElement.classList.remove('scale-105'); // Deshabilitado
+                this.classList.remove('ring-2', 'ring-red-accent', 'ring-opacity-50');
             });
         });
     </script>
