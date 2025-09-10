@@ -220,34 +220,25 @@
                     
                     if ($stmt_insert_token->execute()) {
                         mandarCorreo($row['email'], $token); // Asumiendo que mandarCorreo toma el email
-                        echo '<script>
-                            document.addEventListener("DOMContentLoaded", function() {
-                                showTokenModal("' . $usuario . '", "' . $contrasena . '");
-                                showNotification("Token enviado a tu correo electrónico", "success");
-                            });
-                        </script>';
+                        // En lugar de usar JavaScript desde PHP, establecemos una variable de sesión
+                        session_start();
+                        $_SESSION['show_token_modal'] = true;
+                        $_SESSION['token_username'] = $usuario;
+                        $_SESSION['token_password'] = $contrasena;
+                        $_SESSION['notification'] = ['message' => 'Token enviado a tu correo electrónico', 'type' => 'success'];
                     } else {
-                        echo '<script>
-                            document.addEventListener("DOMContentLoaded", function() {
-                                showNotification("Error al generar el token", "error");
-                            });
-                        </script>';
+                        session_start();
+                        $_SESSION['notification'] = ['message' => 'Error al generar el token', 'type' => 'error'];
                     }
                     $stmt_insert_token->close();
 
                 } else {
-                    echo '<script>
-                        document.addEventListener("DOMContentLoaded", function() {
-                            showNotification("Contraseña incorrecta", "error");
-                        });
-                    </script>';
+                    session_start();
+                    $_SESSION['notification'] = ['message' => 'Contraseña incorrecta', 'type' => 'error'];
                 }
             } else {
-                echo '<script>
-                    document.addEventListener("DOMContentLoaded", function() {
-                        showNotification("Usuario no encontrado", "error");
-                    });
-                </script>';
+                session_start();
+                $_SESSION['notification'] = ['message' => 'Usuario no encontrado', 'type' => 'error'];
             }
             $stmt->close();
         } 
@@ -264,14 +255,8 @@
                 $expiracion = strtotime($row['expiracion']);
 
                 if (password_verify($token_input, $token_hash_guardado) && time() < $expiracion) {
-                    echo '<script>
-                        document.addEventListener("DOMContentLoaded", function() {
-                            showNotification("Inicio de sesión exitoso!", "success");
-                            setTimeout(function() {
-                                window.location.href = "dashboard.php"; // Redirigir al usuario
-                            }, 1500);
-                        });
-                    </script>';
+                    session_start();
+                    $_SESSION['notification'] = ['message' => 'Inicio de sesión exitoso!', 'type' => 'success'];
                     // Eliminar el token usado para seguridad
                     $sql_delete_token = "DELETE FROM tokens WHERE token = ?";
                     $stmt_delete_token = $conexion->prepare($sql_delete_token);
@@ -279,20 +264,18 @@
                     $stmt_delete_token->execute();
                     $stmt_delete_token->close();
 
+                    // Redirigir después de un breve tiempo
+                    header("Refresh: 2; url=dashboard.php");
                 } else {
-                    echo '<script>
-                        document.addEventListener("DOMContentLoaded", function() {
-                            showNotification("Token inválido o expirado", "error");
-                            showTokenModal("' . $usuario . '", "' . $contrasena . '"); // Mantener el modal abierto o reabrirlo
-                        });
-                    </script>';
+                    session_start();
+                    $_SESSION['notification'] = ['message' => 'Token inválido o expirado', 'type' => 'error'];
+                    $_SESSION['show_token_modal'] = true;
+                    $_SESSION['token_username'] = $usuario;
+                    $_SESSION['token_password'] = $contrasena;
                 }
             } else {
-                echo '<script>
-                    document.addEventListener("DOMContentLoaded", function() {
-                        showNotification("No se encontró un token para este usuario", "error");
-                    });
-                </script>';
+                session_start();
+                $_SESSION['notification'] = ['message' => 'No se encontró un token para este usuario', 'type' => 'error'];
             }
             $stmt->close();
         }
@@ -305,31 +288,7 @@
         let currentUsername = '';
         let currentPassword = '';
         
-        // Manejar el envío inicial del formulario de login
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault(); // Prevenir el envío normal del formulario
-
-            const username = document.getElementById('log_username').value.trim();
-            const password = document.getElementById('log_password').value.trim();
-            
-            if (!username || !password) {
-                showNotification('Por favor, completa todos los campos', 'error');
-                return;
-            }
-
-            // Almacenar las credenciales para el flujo del token
-            currentUsername = username;
-            currentPassword = password;
-            
-            // Enviar primera petición para generar y enviar token
-            document.getElementById('hidden_action').value = 'login_request';
-            document.getElementById('hidden_username').value = username;
-            document.getElementById('hidden_password').value = password;
-            document.getElementById('hidden_token').value = ''; // Asegurarse de que el token esté vacío en esta etapa
-            document.getElementById('hiddenForm').submit();
-        });
-        
-        // Mostrar modal de token
+        // Función para mostrar el modal de token
         function showTokenModal(username, password) {
             currentUsername = username;
             currentPassword = password;
@@ -355,30 +314,51 @@
             // Enviar segunda petición con el token
             document.getElementById('hidden_action').value = 'verify_token';
             document.getElementById('hidden_username').value = currentUsername;
-            document.getElementById('hidden_password').value = currentPassword; // Necesario si el PHP lo usa para re-validar
+            document.getElementById('hidden_password').value = currentPassword;
             document.getElementById('hidden_token').value = token;
             document.getElementById('hiddenForm').submit();
-            
-            // closeTokenModal(); // Se cierra después de la respuesta del servidor para ver la notificación
         }
         
         // Reenviar token
         function resendToken() {
             if (!currentUsername || !currentPassword) {
                 showNotification('Error: Datos de sesión perdidos. Por favor, inicia sesión de nuevo.', 'error');
-                closeTokenModal(); // Cerrar modal si no hay datos
+                closeTokenModal();
                 return;
             }
             
-            document.getElementById('hidden_action').value = 'login_request'; // Volver a solicitar el login para generar un nuevo token
+            document.getElementById('hidden_action').value = 'login_request';
             document.getElementById('hidden_username').value = currentUsername;
             document.getElementById('hidden_password').value = currentPassword;
             document.getElementById('hidden_token').value = '';
             document.getElementById('hiddenForm').submit();
             
             showNotification('Reenviando token...', 'success');
-            document.getElementById('tokenInput').value = ''; // Limpiar campo del token
+            document.getElementById('tokenInput').value = '';
         }
+        
+        // Manejar el envío inicial del formulario de login
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const username = document.getElementById('log_username').value.trim();
+            const password = document.getElementById('log_password').value.trim();
+            
+            if (!username || !password) {
+                showNotification('Por favor, completa todos los campos', 'error');
+                return;
+            }
+
+            currentUsername = username;
+            currentPassword = password;
+            
+            // Enviar primera petición para generar y enviar token
+            document.getElementById('hidden_action').value = 'login_request';
+            document.getElementById('hidden_username').value = username;
+            document.getElementById('hidden_password').value = password;
+            document.getElementById('hidden_token').value = '';
+            document.getElementById('hiddenForm').submit();
+        });
         
         // Permitir envío con Enter en el campo de token
         document.getElementById('tokenInput').addEventListener('keypress', function(e) {
@@ -394,7 +374,7 @@
             field.setAttribute('type', type);
         }
         
-        // Sistema de notificaciones mejorado
+        // Sistema de notificaciones
         function showNotification(message, type) {
             const notification = document.createElement('div');
             const bgColor = type === 'success' ? 'bg-green-600' : 'bg-red-600';
@@ -413,12 +393,10 @@
             
             document.getElementById('notifications').appendChild(notification);
             
-            // Animación de entrada
             setTimeout(() => {
                 notification.classList.remove('translate-x-full');
             }, 100);
             
-            // Eliminar automáticamente después de 5 segundos
             setTimeout(() => {
                 notification.classList.add('translate-x-full');
                 setTimeout(() => {
@@ -429,7 +407,7 @@
             }, 5000);
         }
         
-        // Validación de formularios (solo el de login ahora)
+        // Validación de formularios
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             const inputs = this.querySelectorAll('input[required]');
             let valid = true;
@@ -444,7 +422,7 @@
             });
             
             if (!valid) {
-                e.preventDefault(); // Esto ya lo hace el listener principal, pero es bueno tenerlo aquí también
+                e.preventDefault();
                 showNotification('Por favor, completa todos los campos requeridos', 'error');
             }
         });
@@ -452,14 +430,28 @@
         // Efectos de enfoque en los campos de entrada
         document.querySelectorAll('input').forEach(input => {
             input.addEventListener('focus', function() {
-                // this.parentElement.classList.add('scale-105'); // Deshabilitado para evitar escalado del padre
                 this.classList.add('ring-2', 'ring-red-accent', 'ring-opacity-50');
             });
             
             input.addEventListener('blur', function() {
-                // this.parentElement.classList.remove('scale-105'); // Deshabilitado
                 this.classList.remove('ring-2', 'ring-red-accent', 'ring-opacity-50');
             });
+        });
+
+        // Verificar si debemos mostrar el modal de token al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            <?php
+            session_start();
+            if (isset($_SESSION['show_token_modal']) && $_SESSION['show_token_modal']) {
+                echo "showTokenModal('" . $_SESSION['token_username'] . "', '" . $_SESSION['token_password'] . "');";
+                unset($_SESSION['show_token_modal']);
+            }
+            
+            if (isset($_SESSION['notification'])) {
+                echo "showNotification('" . $_SESSION['notification']['message'] . "', '" . $_SESSION['notification']['type'] . "');";
+                unset($_SESSION['notification']);
+            }
+            ?>
         });
     </script>
 </body>
